@@ -1,0 +1,54 @@
+1. Enable Nomad secrets engine in Vault
+    cmd:
+        vault secrets enable nomad
+        vault write nomad/config/lease ttl=3600 max_ttl=86400
+2. Create a Nomad ACL policy that defines the permissions the TFE workspace's token will have in Nomad
+    cmd:
+        nomad acl policy apply -description "Application Developer policy" app-dev nomad-appdev-policy.hcl
+3. Configue TFE to generate dynamic Vault creds. See /trust
+    a. Setup trust between Vault and TFE
+    b. Set policy that has access to Nomad secrets engine
+4. Create TFE workspace and set up Vault dynamic creds variables. See: https://developer.hashicorp.com/terraform/tutorials/cloud/dynamic-credentials#configure-trust-variables 
+5. Create TF config. See /nomad
+    a. Vault provider
+    b. Nomad provider
+    c. A new Vault Nomad secrets engine role for the workspace associated with the Nomad ACL policy from step 2
+    d. A data source that reads a new Nomad token
+    e. A resource to submit the Nomad jobspec
+
+I can't seem to re-submit the Nomad job, 403 permission denied again. Ugh! Only works on initial run for some reason. Maybe because Vault dynamic provider creds doesn't work with dynamic secrets?
+https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/vault-configuration#vault-provider-configuration 
+
+TFE cert steps:
+openssl genrsa -out ca.key 4096
+openssl req -new -x509 -days 365 -key ca.key -subj "/C=CN/ST=GD/L=SZ/O=BFB/CN=BFB Root CA" -out ca.crt
+openssl req -newkey rsa:4096 -nodes -keyout key.pem -subj "/C=CN/ST=GD/L=SZ/O=BFB./CN=*.bfb.com" -out server.csr
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:bfb.com,DNS:terraform.bfb.com") -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out cert.pem
+nano cert.pem, then append the ca.crt text and save
+cp cert.pem bundle.pem
+
+vault auth enable userpass
+vault write auth/userpass/users/bruce.wayne \
+    password=batman \
+    policies=nomad-secrets-policy
+
+1. Enable Nomad secrets engine in Vault
+    cmd:
+        vault secrets enable nomad
+        vault write nomad/config/lease ttl=3600 max_ttl=86400
+2. Create a Nomad ACL policy that defines the permissions the user's token will have in Nomad
+    cmd:
+        nomad acl policy apply -description "Application Developer policy" app-dev nomad-appdev-policy.hcl
+3. Create a Vault policy that allows the user to access the Nomad secrets engine to generate a token
+        cmd:
+
+3. Enable user pass secrets engine in Vault and create a user
+    cmd:
+        vault auth enable userpass
+        vault write auth/userpass/users/bruce.wayne \
+        password=batman \
+        policies=nomad-secrets-policy
+4. Create TFE workspace and set enter the variables
+5. Create TF config and apply. See /nomad
+
+
