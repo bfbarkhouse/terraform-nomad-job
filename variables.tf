@@ -2,6 +2,10 @@ variable "vault_nomad_secret_role-prefix" {
   type        = string
   default     = "tfc-nomad-role-wksp-"
 }
+variable "tfc-workspace" {
+  type = string
+  
+}
 variable "nomad_policies" {
   type = string
 }

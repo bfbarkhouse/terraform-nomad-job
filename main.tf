@@ -9,16 +9,16 @@
 #   #token = "ae20ceaa-..."
 # }
 
-resource "vault_nomad_secret_role" "tfc-nomad-role-wksp-hello-world" {
+resource "vault_nomad_secret_role" "tfc-nomad-role" {
   backend = "nomad"
-  role = "${var.vault_nomad_secret_role-prefix}hello-world"
+  role = "${var.vault_nomad_secret_role-prefix}${var.tfc-workspace}"
   type = "client"
     policies = jsondecode(var.nomad_policies)
 }
 
 data "vault_nomad_access_token" "vault_nomad_token" {
  backend = "nomad"
- role    = vault_nomad_secret_role.tfc-nomad-role-wksp-hello-world.role
+ role    = vault_nomad_secret_role.tfc-nomad-role.role
 }
 
 # resource "nomad_acl_token" "token" {
