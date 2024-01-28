@@ -21,6 +21,7 @@ variable "vault_username" {
 variable "vault_password" {
   type        = string
   description = "Your Vault password."
+  sensitive = true
 }
 
 
