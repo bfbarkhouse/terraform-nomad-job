@@ -16,9 +16,10 @@ https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider
         vault write auth/userpass/users/bruce.wayne \
         password=batman \
         policies=vault-nomad-secrets-policy
-5. Write Terraform config file that creates the following:
+5. Write the Nomad jobspec. See example: hello-world.job.hcl
+6. Write Terraform config file that creates the following:
     a. Vault Nomad secrets engine role for the TFE/C workspace and assign the desired Nomad ACL policy 
     b. Nomad ACL token to use for the job submission
     c. Nomad job from the provided jobspec file
     d. Requisite variables, outputs and provider configs. Note the identity authenticating to the Vault provider should be assigned to the vault-nomad-secrets-policy  
-4. Create TFE workspace and manually set up variables OR publish to PMR as a no-code module and provision a workspace.
+7. Create TFE workspace, manually set up variables and then apply OR publish to PMR as a no-code module and provision a workspace.
