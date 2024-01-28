@@ -27,20 +27,18 @@ openssl x509 -req -extfile <(printf "subjectAltName=DNS:bfb.com,DNS:terraform.bf
 nano cert.pem, then append the ca.crt text and save
 cp cert.pem bundle.pem
 
-vault auth enable userpass
-vault write auth/userpass/users/bruce.wayne \
-    password=batman \
-    policies=nomad-secrets-policy
 
 1. Enable Nomad secrets engine in Vault
     cmd:
         vault secrets enable nomad
         vault write nomad/config/lease ttl=3600 max_ttl=86400
-2. Create a Nomad ACL policy that defines the permissions the user's token will have in Nomad
+2. Create and apply a Nomad ACL policy that defines the permissions the user's token will have in Nomad
     cmd:
         nomad acl policy apply -description "Application Developer policy" app-dev nomad-appdev-policy.hcl
 3. Create a Vault policy that allows the user to access the Nomad secrets engine to generate a token
-        cmd:
+    cmd:
+        vault policy write nomad-secrets-policy nomad-secrets-policy.hcl
+
 
 3. Enable user pass secrets engine in Vault and create a user
     cmd:
@@ -52,3 +50,6 @@ vault write auth/userpass/users/bruce.wayne \
 5. Create TF config and apply. See /nomad
 
 
+To tag a new release
+git tag v0.0.x
+git push origin --tags
