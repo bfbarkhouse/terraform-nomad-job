@@ -5,9 +5,14 @@
 2. Create and apply a Nomad ACL policy that defines the permissions the user's token will have in Nomad
     cmd:
         nomad acl policy apply -description "Application Developer policy" app-dev nomad-appdev-policy.hcl
+        nomad acl policy apply -description "Default Nampespace write policy" default-namespace-write nomad-default-namespace-policy.hcl 
 3. Create a Vault policy that allows the user to use the Nomad secrets engine to generate a token. See nomad-secrets-policy.hcl
     cmd:
         vault policy write vault-nomad-secrets-policy vault-nomad-secrets-policy.hcl
+        vault policy write vault-nomad-default-namespace-role-policy vault-nomad-default-namespace-role-policy.hcl
+4. Create a Nomad secrets engine role that has the Nomad policy
+    cmd: 
+        vault write nomad/role/default-namespace-write policies=default-namespace-write
 4. Enable user pass secrets engine in Vault and create a user. Note: Vault dynamic provider creds do not support dynamic secrets engines like Nomad secrets engine.
 Therefore, TFE/C cannot leverage Vault dynamic providers credentials to provision a Nomad ACL and submit a job in a repeatable manner.
 https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider-credentials/vault-configuration#vault-provider-configuration 
@@ -15,7 +20,7 @@ https://developer.hashicorp.com/terraform/cloud-docs/workspaces/dynamic-provider
         vault auth enable userpass
         vault write auth/userpass/users/bruce.wayne \
         password=batman \
-        policies=vault-nomad-secrets-policy
+        policies=vault-nomad-default-namespace-role-policy
 5. Write the Nomad jobspec. See example: hello-world.job.hcl
 6. Write Terraform config file that creates the following:
     a. Vault Nomad secrets engine role for the TFE/C workspace and assign the desired Nomad ACL policy 

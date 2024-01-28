@@ -1,14 +1,6 @@
-variable "vault_nomad_secret_role-prefix" {
-  type    = string
-  default = "tfc-nomad-role-wksp-"
-}
-variable "tfc-workspace" {
-  type        = string
-  description = "Name of the Terraform workspace. This must match the workspace name you will enter on the next screen."
-}
-variable "nomad_policies" {
-  type        = string
-  description = "A comma separated list of Nomad ACL policies to give the ACL token used to access Nomad. Example: [ \"app-dev\", \"namespace1\" ]"
+variable "nomad_secrets_role" {
+  type = string
+  description = "Name of the Nomad secrets engine role used to submit the job. Note: If your you Vault identity doesn't not have permissions to the role, the run will fail."
 }
 variable "nomad_job_spec_file" {
   type        = string
