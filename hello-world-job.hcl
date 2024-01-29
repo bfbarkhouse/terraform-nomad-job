@@ -40,7 +40,7 @@ job "hello-world-job" {
 
       resources {
         cpu    = 500 # MHz
-        memory = 100 # MB
+        memory = 200 # MB
       }
     }
   }
